@@ -1,0 +1,35 @@
+{
+  "name": "@nimiq/libswap",
+  "version": "1.0.0",
+  "description": "Typed Javascript library to handle atomic swaps.",
+  "repository": "https://github.com/nimiq/libswap-js",
+  "author": "Nimiq Network Ltd.",
+  "private": false,
+  "module": "./dist/libswap.js",
+  "exports": {
+    ".": {
+      "import": "./dist/libswap.js"
+    }
+  },
+  "types": "./dist/libswap.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "tsc"
+  },
+  "files": ["dist"],
+  "license": "Apache-2.0",
+  "keywords": [
+    "Nimiq",
+    "swap"
+  ],
+  "dependencies": {
+    "@nimiq/oasis-api": "^1.0.0",
+    "promise.prototype.finally": "^3.1.3"
+  },
+  "devDependencies": {
+    "@nimiq/core-web": "^1.5.8",
+    "@nimiq/electrum-client": "https://github.com/nimiq/electrum-client#build",
+    "@types/promise.prototype.finally": "^2.0.4",
+    "typescript": "^4.2.4"
+  }
+}
