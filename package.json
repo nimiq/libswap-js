@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/libswap",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Typed Javascript library to handle atomic swaps.",
   "repository": "https://github.com/nimiq/libswap-js",
   "author": "Nimiq Network Ltd.",
