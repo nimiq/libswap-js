@@ -13,10 +13,10 @@
   dependencies:
     bitcoinjs-lib "^5.1.10"
 
-"@nimiq/oasis-api@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/oasis-api/-/oasis-api-1.0.0.tgz#f5a265cf2500284dc2077f82da305a5662223f55"
-  integrity sha512-JIcLbiZDKp+nBzdXOvNiHT05FJ1OCxcdRjWFHGZEnGMFN9R6VkzxSA37OFS7egT4VF+/S2SHWQtjNps1X+K/Mg==
+"@nimiq/oasis-api@^1.0.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@nimiq/oasis-api/-/oasis-api-1.1.1.tgz#d1aa3d0f9afabf9116205809a0fc72d2e392bafa"
+  integrity sha512-jXNO7nvE0mzAyDCrucByv5AcyDWZjyqb9810YctysxqUtOxNG27hPkhomL+WW6nrnTVgvriJo3yaTFPTfLphKw==
 
 "@types/node@10.12.18":
   version "10.12.18"

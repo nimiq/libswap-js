@@ -5,7 +5,7 @@ export type HtlcDetails = OasisHtlc;
 
 export interface OasisClient {
     getHtlc(id: string): Promise<HtlcDetails>;
-    settleHtlc(id: string, secret: string, settlementJWS: string): Promise<HtlcDetails>;
+    settleHtlc(id: string, secret: string, settlementJWS: string, authorizationToken?: string): Promise<HtlcDetails>;
 }
 
 export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
@@ -96,7 +96,7 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         return tx.preimage.value;
     }
 
-    public async settleHtlc(settlementJWS: string, secret: string): Promise<HtlcDetails> {
+    public async settleHtlc(settlementJWS: string, secret: string, authorizationToken?: string): Promise<HtlcDetails> {
         if (this.stopped) throw new Error('EuroAssetAdapter called while stopped');
 
         const jwsBody = settlementJWS.split('.')[1];
@@ -106,14 +106,14 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
 
         let htlc: HtlcDetails;
         try {
-            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS);
+            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, authorizationToken);
         } catch (error) {
             console.error(error); // eslint-disable-line no-console
             htlc = await this.client.getHtlc(payload.contractId);
         }
 
         if (htlc.status !== HtlcStatus.SETTLED || htlc.settlement.status === SettlementStatus.WAITING) {
-            throw new Error('Could not settle OASIS HTLC (invalid secret?)');
+            throw new Error('Could not settle OASIS HTLC (invalid secret or authorization token?)');
         }
 
         return htlc;
