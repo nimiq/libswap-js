@@ -96,7 +96,12 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         return tx.preimage.value;
     }
 
-    public async settleHtlc(settlementJWS: string, secret: string, authorizationToken?: string): Promise<HtlcDetails> {
+    public async settleHtlc(
+        settlementJWS: string,
+        secret: string,
+        hash: string,
+        authorizationToken?: string,
+    ): Promise<HtlcDetails> {
         if (this.stopped) throw new Error('EuroAssetAdapter called while stopped');
 
         const jwsBody = settlementJWS.split('.')[1];
