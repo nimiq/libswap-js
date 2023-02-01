@@ -21,7 +21,7 @@ export class BitcoinAssetAdapter implements AssetAdapter<SwapAsset.BTC> {
 
     constructor(public client: BitcoinClient) {}
 
-    public async findTransaction(
+    private async findTransaction(
         address: string,
         test: (tx: TransactionDetails) => boolean,
     ): Promise<TransactionDetails> {

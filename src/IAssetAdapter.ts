@@ -32,8 +32,6 @@ export type Client<TAsset extends SwapAsset> =
 export interface AssetAdapter<TAsset extends SwapAsset> {
     client: Client<TAsset>;
 
-    findTransaction(address: string, test: (tx: Transaction<TAsset>) => boolean): Promise<Transaction<TAsset>>;
-
     awaitHtlcFunding(
         address: string,
         value: number,

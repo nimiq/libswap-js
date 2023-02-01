@@ -14,7 +14,7 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
 
     constructor(public client: OasisClient) {}
 
-    public async findTransaction(
+    private async findTransaction(
         id: string,
         test: (htlc: HtlcDetails) => boolean,
     ): Promise<HtlcDetails> {

@@ -25,7 +25,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
 
     constructor(public client: NimiqClient) {}
 
-    public async findTransaction(
+    private async findTransaction(
         address: string,
         test: (tx: TransactionDetails) => boolean,
     ): Promise<TransactionDetails> {
