@@ -67,7 +67,7 @@ export interface Web3Client {
     endBlock?: number,
 }
 
-export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
+export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
     private cancelCallback: ((reason: Error) => void) | null = null;
     private stopped = false;
 
@@ -124,14 +124,17 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
         });
     }
 
-    public async awaitHtlcFunding(htlcId: string): Promise<Event<EventType.OPEN>> {
+    public async awaitHtlcFunding(htlcId: string, value: number): Promise<Event<EventType.OPEN>> {
         const filter = this.client.htlcContract.filters.Open();
 
         return this.findLog<EventType.OPEN>(
             filter,
             (id, token, amount, recipient, hash, timeout, log) => {
                 if (id !== htlcId) return false;
-                // if (amount.toNumber() !== value) return false;
+                if (amount.toNumber() !== value) {
+                    console.warn(`Found USDC HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`);
+                    return false;
+                }
 
                 // Only logs that are already included in the blockchain can be returned by the filter
                 return true;
