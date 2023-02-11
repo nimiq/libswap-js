@@ -1,7 +1,7 @@
 import { BigNumber, Contract, Event as EthersEvent, EventFilter, providers } from 'ethers';
 import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 
-enum EventType {
+export enum EventType {
     OPEN = 'Open',
     REDEEM = 'Redeem',
     REFUND = 'Refund',
@@ -49,7 +49,7 @@ type RefundResult = ReadonlyArray<any> & RefundEventArgs & {
     id: string,
 }
 
-interface Event<T extends EventType> extends EthersEvent {
+export interface Event<T extends EventType> extends EthersEvent {
     args:
         T extends EventType.OPEN ? OpenResult :
         T extends EventType.REDEEM ? RedeemResult :
