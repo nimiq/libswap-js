@@ -63,6 +63,7 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         id: string,
         value: number,
         data?: string,
+        confirmations?: number,
         onUpdate?: (htlc: HtlcDetails) => any,
     ): Promise<HtlcDetails> {
         return this.findTransaction(

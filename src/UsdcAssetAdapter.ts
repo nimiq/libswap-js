@@ -63,6 +63,7 @@ export type GenericEvent = Event<EventType>;
 
 export interface Web3Client {
     htlcContract: Contract,
+    currentBlock: () => number,
     startBlock: number,
     endBlock?: number,
 }
@@ -75,12 +76,12 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
 
     public async findLog<T extends EventType>(
         filter: EventFilter,
-        test: (...args: [...EventArgs<T>, Event<T>]) => boolean,
+        test: (...args: [...EventArgs<T>, Event<T>]) => boolean | Promise<boolean>,
     ): Promise<Event<T>> {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            const listener = (...args: [...EventArgs<T>, Event<T>]) => {
-                if (!test.apply(this, args)) return false;
+            const listener = async (...args: [...EventArgs<T>, Event<T>]) => {
+                if (!(await test.apply(this, args))) return false;
 
                 cleanup();
                 resolve(args[args.length - 1] as Event<T>);
@@ -99,7 +100,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
                 );
                 for (const event of history) {
                     if (!event.args) continue;
-                    if (listener(...event.args as EventArgs<T>, event as Event<T>)) break;
+                    if (await listener(...event.args as EventArgs<T>, event as Event<T>)) break;
                 }
             };
 
@@ -124,15 +125,28 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
         });
     }
 
-    public async awaitHtlcFunding(htlcId: string, value: number): Promise<Event<EventType.OPEN>> {
+    public async awaitHtlcFunding(
+        htlcId: string,
+        value: number,
+        data?: string,
+        confirmations = 0,
+        onPending?: (tx: GenericEvent) => any,
+    ): Promise<Event<EventType.OPEN>> {
         const filter = this.client.htlcContract.filters.Open();
 
         return this.findLog<EventType.OPEN>(
             filter,
-            (id, token, amount, recipient, hash, timeout, log) => {
+            async (id, token, amount, recipient, hash, timeout, log) => {
                 if (id !== htlcId) return false;
                 if (amount.toNumber() !== value) {
                     console.warn(`Found USDC HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`);
+                    return false;
+                }
+
+                const logConfirmations = this.client.currentBlock() - log.blockNumber + 1;
+                if (logConfirmations < confirmations) {
+                    if (typeof onPending === 'function') onPending(log);
+
                     return false;
                 }
 

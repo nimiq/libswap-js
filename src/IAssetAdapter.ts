@@ -43,7 +43,8 @@ export interface AssetAdapter<TAsset extends SwapAsset> {
         address: string,
         value: number,
         data: string,
-        onPending: (tx: Transaction<TAsset>) => any,
+        confirmations: number,
+        onPending?: (tx: Transaction<TAsset>) => any,
     ): Promise<Transaction<TAsset>>;
 
     fundHtlc(

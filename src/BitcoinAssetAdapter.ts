@@ -78,6 +78,7 @@ export class BitcoinAssetAdapter implements AssetAdapter<SwapAsset.BTC> {
         address: string,
         value: number,
         data?: string,
+        confirmations = 0,
         onPending?: (tx: TransactionDetails) => any,
     ): Promise<TransactionDetails> {
         return this.findTransaction(
@@ -86,6 +87,12 @@ export class BitcoinAssetAdapter implements AssetAdapter<SwapAsset.BTC> {
                 const htlcOutput = tx.outputs.find((out) => out.address === address);
                 if (!htlcOutput) return false;
                 if (htlcOutput.value !== value) return false;
+
+                if (tx.confirmations < confirmations) {
+                    if (typeof onPending === 'function') onPending(tx);
+
+                    return false;
+                }
 
                 if (tx.replaceByFee) {
                     // Must wait until mined

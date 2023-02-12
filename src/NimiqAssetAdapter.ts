@@ -83,6 +83,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
         address: string,
         value: number,
         data: string,
+        confirmations = 0,
         onPending?: (tx: TransactionDetails) => any,
     ): Promise<TransactionDetails> {
         return this.findTransaction(
@@ -93,7 +94,9 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
                 if (typeof tx.data.raw !== 'string' || tx.data.raw !== data) return false;
 
                 // Must wait until mined
-                if (tx.state === 'mined' || tx.state === 'confirmed') return true;
+                if (tx.state === 'mined' || tx.state === 'confirmed') {
+                    if (tx.confirmations! >= confirmations) return true;
+                }
 
                 if (typeof onPending === 'function') onPending(tx);
 
