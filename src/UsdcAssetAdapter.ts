@@ -170,7 +170,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
 
     public async awaitSwapSecret(htlcId: string): Promise<string> {
         const log = await this.awaitHtlcSettlement(htlcId);
-        return log.args.secret;
+        return log.args.secret.substring(2);
     }
 
     public async settleHtlc(
