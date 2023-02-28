@@ -132,7 +132,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
         confirmations = 0,
         onPending?: (tx: GenericEvent) => any,
     ): Promise<Event<EventType.OPEN>> {
-        const filter = this.client.htlcContract.filters.Open();
+        const filter = this.client.htlcContract.filters.Open(htlcId);
 
         return this.findLog<EventType.OPEN>(
             filter,
@@ -161,7 +161,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
     }
 
     public async awaitHtlcSettlement(htlcId: string): Promise<Event<EventType.REDEEM>> {
-        const filter = this.client.htlcContract.filters.Redeem();
+        const filter = this.client.htlcContract.filters.Redeem(htlcId);
         return this.findLog<EventType.REDEEM>(
             filter,
             (id, secret, log) => id === htlcId,
