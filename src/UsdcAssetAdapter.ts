@@ -63,7 +63,7 @@ export type GenericEvent = Event<EventType>;
 
 export interface Web3Client {
     htlcContract: Contract,
-    currentBlock: () => number,
+    currentBlock: () => number | Promise<number>,
     startBlock: number,
     endBlock?: number,
 }
@@ -143,7 +143,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
                     return false;
                 }
 
-                const logConfirmations = this.client.currentBlock() - log.blockNumber + 1;
+                const logConfirmations = await this.client.currentBlock() - log.blockNumber + 1;
                 if (logConfirmations < confirmations) {
                     if (typeof onPending === 'function') onPending(log);
 
