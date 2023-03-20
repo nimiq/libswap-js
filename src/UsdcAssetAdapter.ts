@@ -143,11 +143,13 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
                     return false;
                 }
 
-                const logConfirmations = await this.client.currentBlock() - log.blockNumber + 1;
-                if (logConfirmations < confirmations) {
-                    if (typeof onPending === 'function') onPending(log);
+                if (confirmations > 0) {
+                    const logConfirmations = await this.client.currentBlock() - log.blockNumber + 1;
+                    if (logConfirmations < confirmations) {
+                        if (typeof onPending === 'function') onPending(log);
 
-                    return false;
+                        return false;
+                    }
                 }
 
                 // Only logs that are already included in the blockchain can be returned by the filter
