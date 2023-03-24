@@ -344,10 +344,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@nimiq/core-web@^1.5.8":
-  version "1.5.8"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.5.8.tgz#da8abef84c6d293cbb9ca495a77f08daa08886b9"
-  integrity sha512-MNpFbGZetz2eZcHtJVa5tpmLjPf65mTcJBRQkOHS8kWE+f+Z++hdnwWUBQCEAph4oC6bsE5JSuU7VpwcogN7+w==
+"@nimiq/core-web@next":
+  version "2.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-beta.0.tgz#b54133660f010371674a0e72d4ec7b5539a1a20a"
+  integrity sha512-zNPlNYRUbQHYmK5la10hwX3NZOHwBHLa2dgla+R8LzRJEGMpkpmiNPLaISXD2wH5p2m42x4AFgbmqbM0FDpX2w==
 
 "@nimiq/electrum-client@https://github.com/nimiq/electrum-client#build":
   version "0.2.1"
