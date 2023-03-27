@@ -76,12 +76,12 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
 
     public async findLog<T extends EventType>(
         filter: EventFilter,
-        test: (...args: [...EventArgs<T>, Event<T>]) => boolean | Promise<boolean>,
+        test?: (...args: [...EventArgs<T>, Event<T>]) => boolean | Promise<boolean>,
     ): Promise<Event<T>> {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             const listener = async (...args: [...EventArgs<T>, Event<T>]) => {
-                if (!(await test.apply(this, args))) return false;
+                if (test && !(await test.apply(this, args))) return false;
 
                 cleanup();
                 resolve(args[args.length - 1] as Event<T>);
@@ -137,7 +137,6 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
         return this.findLog<EventType.OPEN>(
             filter,
             async (id, token, amount, recipient, hash, timeout, log) => {
-                if (id !== htlcId) return false;
                 if (amount.toNumber() !== value) {
                     console.warn(`Found USDC HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`);
                     return false;
@@ -164,10 +163,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
 
     public async awaitHtlcSettlement(htlcId: string): Promise<Event<EventType.REDEEM>> {
         const filter = this.client.htlcContract.filters.Redeem(htlcId);
-        return this.findLog<EventType.REDEEM>(
-            filter,
-            (id, secret, log) => id === htlcId,
-        );
+        return this.findLog<EventType.REDEEM>(filter);
     }
 
     public async awaitSwapSecret(htlcId: string): Promise<string> {
