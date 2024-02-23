@@ -13,7 +13,7 @@ export type Contract<TAsset extends SwapAsset> = {
         address: string,
         data: TAsset extends SwapAsset.NIM ? string : never,
         script: TAsset extends SwapAsset.BTC ? string : never,
-        contract: TAsset extends SwapAsset.USDC ? string : never,
+        contract: TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? string : never,
     },
 }
 
@@ -46,7 +46,8 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
             case SwapAsset.BTC:
                 return new BitcoinAssetAdapter(client as Client<SwapAsset.BTC>) as AssetAdapter<SwapAsset>;
             case SwapAsset.USDC:
-                return new UsdcAssetAdapter(client as Client<SwapAsset.USDC>) as AssetAdapter<SwapAsset>;
+            case SwapAsset.USDC_MATIC:
+                return new UsdcAssetAdapter(client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC>) as AssetAdapter<SwapAsset>;
             case SwapAsset.EUR:
                 return new EuroAssetAdapter(client as Client<SwapAsset.EUR>) as AssetAdapter<SwapAsset>;
             default:

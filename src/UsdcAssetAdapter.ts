@@ -68,7 +68,7 @@ export interface Web3Client {
     endBlock?: number,
 }
 
-export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC> {
+export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset.USDC_MATIC> {
     private cancelCallback: ((reason: Error) => void) | null = null;
     private stopped = false;
 
