@@ -6,7 +6,7 @@ import { UsdcAssetAdapter } from './UsdcAssetAdapter';
 import { EuroAssetAdapter } from './EuroAssetAdapter';
 
 // Re-export to centralize exports
-export { SwapAsset, Client, Transaction };
+export { SwapAsset, Client, Transaction, NimiqAssetAdapter };
 
 export type Contract<TAsset extends SwapAsset> = {
     htlc: {
