@@ -1,6 +1,6 @@
 import { BitcoinAssetAdapter } from './BitcoinAssetAdapter';
 import { Erc20AssetAdapter } from './Erc20AssetAdapter';
-import { EuroAssetAdapter } from './EuroAssetAdapter';
+import { FiatAssetAdapter } from './FiatAssetAdapter';
 import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 import type { Client, Transaction } from './IAssetAdapter';
 import { NimiqAssetAdapter } from './NimiqAssetAdapter';
@@ -54,7 +54,9 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
                     SwapAsset
                 >;
             case SwapAsset.EUR:
-                return new EuroAssetAdapter(client as Client<SwapAsset.EUR>) as AssetAdapter<SwapAsset>;
+                return new FiatAssetAdapter(client as Client<SwapAsset.EUR>) as AssetAdapter<SwapAsset>;
+            case SwapAsset.CRC:
+                return new FiatAssetAdapter(client as Client<SwapAsset.CRC>) as AssetAdapter<SwapAsset>;
             default:
                 throw new Error(`Unsupported asset: ${asset}`);
         }
@@ -127,7 +129,7 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
             serializedTx,
             secret,
             this.swap.hash,
-            authorizationToken,
+            { authorization: authorizationToken },
         );
     }
 

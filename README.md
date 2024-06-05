@@ -107,7 +107,7 @@ await swapHandler.settleIncoming(serializedSettlementTx, secret)
 /**
  * 5. Await confirmation of settled HTLC
  *
- * This is especially relevant for EUR contracts, as they may take a
+ * This is especially relevant for EUR and CRC contracts, as they may take a
  * few minutes to confirm after they were settled.
  *
  * The optional `onUpdate` callback receives the transaction object:

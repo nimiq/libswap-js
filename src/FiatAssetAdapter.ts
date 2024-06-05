@@ -1,5 +1,5 @@
 import { Htlc as OasisHtlc, HtlcStatus, SettlementInstruction, SettlementStatus } from '@nimiq/oasis-api';
-import { AssetAdapter, SwapAsset } from './IAssetAdapter';
+import { AssetAdapter, FiatSwapAsset, SwapAsset, Transaction } from './IAssetAdapter';
 
 export type HtlcDetails = OasisHtlc;
 
@@ -8,7 +8,7 @@ export interface OasisClient {
     settleHtlc(id: string, secret: string, settlementJWS: string, authorizationToken?: string): Promise<HtlcDetails>;
 }
 
-export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
+export class FiatAssetAdapter implements AssetAdapter<FiatSwapAsset> {
     private cancelCallback: ((reason: Error) => void) | null = null;
     private stopped = false;
 
@@ -82,7 +82,7 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
 
     // eslint-disable-next-line class-methods-use-this
     public async fundHtlc(): Promise<HtlcDetails> {
-        throw new Error('Method "fundHtlc" not available for EUR HTLCs');
+        throw new Error('Method "fundHtlc" not available for EUR/CRC HTLCs');
     }
 
     public async awaitHtlcSettlement(id: string): Promise<OasisHtlc<HtlcStatus.SETTLED>> {
@@ -103,7 +103,7 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         hash: string,
         authorizationToken?: string,
     ): Promise<HtlcDetails> {
-        if (this.stopped) throw new Error('EuroAssetAdapter called while stopped');
+        if (this.stopped) throw new Error('FiatAssetAdapter called while stopped');
 
         const jwsBody = settlementJWS.split('.')[1];
         // JWS is encoded as Base64Url
@@ -112,7 +112,9 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
 
         let htlc: HtlcDetails;
         try {
-            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, authorizationToken);
+            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, {
+                authorization: authorizationToken,
+            });
         } catch (error) {
             console.error(error); // eslint-disable-line no-console
             htlc = await this.client.getHtlc(payload.contractId);
