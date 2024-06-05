@@ -1,7 +1,7 @@
-import { BitcoinClient, TransactionDetails as BitcoinTransactionDetails } from './BitcoinAssetAdapter';
-import { GenericEvent as Erc20TransactionDetails, Web3Client } from './Erc20AssetAdapter';
-import { HtlcDetails, OasisClient } from './FiatAssetAdapter';
-import { NimiqClient, TransactionDetails as NimiqTransactionDetails } from './NimiqAssetAdapter';
+import type { BitcoinClient, TransactionDetails as BitcoinTransactionDetails } from './BitcoinAssetAdapter';
+import type { GenericEvent as Erc20TransactionDetails, Web3Client } from './Erc20AssetAdapter';
+import type { HtlcDetails, OasisClient, SettleHtlcTokens } from './FiatAssetAdapter';
+import type { NimiqClient, TransactionDetails as NimiqTransactionDetails } from './NimiqAssetAdapter';
 
 export enum SwapAsset {
     NIM = 'NIM',
@@ -52,7 +52,7 @@ export interface AssetAdapter<TAsset extends SwapAsset> {
         serializedTx: string,
         secret: string,
         hash: string,
-        authorizationToken?: string,
+        tokens?: Partial<SettleHtlcTokens>,
     ): Promise<Transaction<TAsset>>;
 
     awaitSettlementConfirmation(

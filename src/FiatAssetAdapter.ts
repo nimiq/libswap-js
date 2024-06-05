@@ -1,11 +1,18 @@
 import { Htlc as OasisHtlc, HtlcStatus, SettlementInstruction, SettlementStatus } from '@nimiq/oasis-api';
-import { AssetAdapter, FiatSwapAsset, SwapAsset, Transaction } from './IAssetAdapter';
+import type { AssetAdapter, FiatSwapAsset } from './IAssetAdapter';
 
 export type HtlcDetails = OasisHtlc;
 
+export type SettleHtlcTokens = { authorization: string, smsApi: string };
+
 export interface OasisClient {
     getHtlc(id: string): Promise<HtlcDetails>;
-    settleHtlc(id: string, secret: string, settlementJWS: string, authorizationToken?: string): Promise<HtlcDetails>;
+    settleHtlc(
+        id: string,
+        secret: string,
+        settlementJWS: string,
+        tokens?: Partial<SettleHtlcTokens>,
+    ): Promise<HtlcDetails>;
 }
 
 export class FiatAssetAdapter implements AssetAdapter<FiatSwapAsset> {
@@ -101,7 +108,7 @@ export class FiatAssetAdapter implements AssetAdapter<FiatSwapAsset> {
         settlementJWS: string,
         secret: string,
         hash: string,
-        authorizationToken?: string,
+        tokens?: Partial<SettleHtlcTokens>,
     ): Promise<HtlcDetails> {
         if (this.stopped) throw new Error('FiatAssetAdapter called while stopped');
 
@@ -112,9 +119,7 @@ export class FiatAssetAdapter implements AssetAdapter<FiatSwapAsset> {
 
         let htlc: HtlcDetails;
         try {
-            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, {
-                authorization: authorizationToken,
-            });
+            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, tokens);
         } catch (error) {
             console.error(error); // eslint-disable-line no-console
             htlc = await this.client.getHtlc(payload.contractId);
