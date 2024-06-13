@@ -3,8 +3,8 @@ import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 
 shimPromiseFinally();
 
-export type TransactionDetails = import('@nimiq/core-web').PlainTransactionDetails;
-export type ConsensusState = import('@nimiq/core-web').ConsensusState;
+export type TransactionDetails = import('@nimiq/core').PlainTransactionDetails;
+export type ConsensusState = import('@nimiq/core').ConsensusState;
 
 export interface NimiqClient {
     addTransactionListener(listener: (tx: TransactionDetails) => any, addresses: string[]): number | Promise<number>;

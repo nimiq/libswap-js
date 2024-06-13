@@ -344,10 +344,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@nimiq/core-web@next":
-  version "2.0.0-alpha.21.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-alpha.21.0.tgz#7f90948b466ad0906da92205b5b131b62e25110c"
-  integrity sha512-MN78xNEH6mmFpV2bLGhbKYqKDhdXZVo4WWMOKjhcGcY8WBg6W8DOiyQVRW1rwQyB3aq1ep0U3cwrJbOLU7nqwg==
+"@nimiq/core@next":
+  version "2.0.0-next.22.0"
+  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.0.0-next.22.0.tgz#23d591f37cac65a59f88e2ae4c4d051c43350236"
+  integrity sha512-d7ot5m1cciP1+PYv3hglHoZ+kKhUBNqCqByTaTYlCMeUQTnGJ8g2JowBtr3Lz1SOlyHN0QPqiLSd5K+CyiImcQ==
   dependencies:
     comlink "^4.4.1"
     websocket "^1.0.34"

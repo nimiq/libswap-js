@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/libswap",
-  "version": "1.4.0-albatross.0",
+  "version": "1.4.0-albatross.1",
   "description": "Typed Javascript library to handle atomic swaps.",
   "repository": "https://github.com/nimiq/libswap-js",
   "author": "Nimiq Network Ltd.",
@@ -25,7 +25,7 @@
     "swap"
   ],
   "dependencies": {
-    "@nimiq/core-web": "next",
+    "@nimiq/core": "next",
     "@nimiq/electrum-client": "https://github.com/nimiq/electrum-client#build",
     "@nimiq/oasis-api": "^1.0.1",
     "ethers": "^5.7.2",
