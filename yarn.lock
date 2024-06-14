@@ -395,10 +395,9 @@
   dependencies:
     bitcoinjs-lib "^5.1.10"
 
-"@nimiq/oasis-api@^1.0.1":
+"@nimiq/oasis-api@https://github.com/nimiq/oasis-api-js#9d63fac0ab1364e4e1494334ee2d74f3d6f96b35":
   version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@nimiq/oasis-api/-/oasis-api-1.1.1.tgz#d1aa3d0f9afabf9116205809a0fc72d2e392bafa"
-  integrity sha512-jXNO7nvE0mzAyDCrucByv5AcyDWZjyqb9810YctysxqUtOxNG27hPkhomL+WW6nrnTVgvriJo3yaTFPTfLphKw==
+  resolved "https://github.com/nimiq/oasis-api-js#9d63fac0ab1364e4e1494334ee2d74f3d6f96b35"
 
 "@oxlint/darwin-arm64@0.10.3":
   version "0.10.3"

@@ -1,7 +1,7 @@
 import { BitcoinAssetAdapter } from './BitcoinAssetAdapter';
 import { Erc20AssetAdapter } from './Erc20AssetAdapter';
 import { FiatAssetAdapter } from './FiatAssetAdapter';
-import type { SettleHtlcTokens } from './FiatAssetAdapter';
+import type { OasisSettlementTokens } from './FiatAssetAdapter';
 import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 import type { Client, Transaction } from './IAssetAdapter';
 import { NimiqAssetAdapter } from './NimiqAssetAdapter';
@@ -124,7 +124,7 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
     public async settleIncoming(
         serializedTx: string,
         secret: string,
-        tokens?: Partial<SettleHtlcTokens>,
+        tokens?: OasisSettlementTokens,
     ): Promise<Transaction<ToAsset>> {
         return this.toAssetAdapter.settleHtlc(
             serializedTx,
