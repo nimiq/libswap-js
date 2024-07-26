@@ -2,8 +2,8 @@ import { BitcoinAssetAdapter } from './BitcoinAssetAdapter';
 import { Erc20AssetAdapter } from './Erc20AssetAdapter';
 import { FiatAssetAdapter } from './FiatAssetAdapter';
 import type { OasisSettlementTokens } from './FiatAssetAdapter';
-import { AssetAdapter, SwapAsset } from './IAssetAdapter';
-import type { Client, Transaction } from './IAssetAdapter';
+import { SwapAsset } from './IAssetAdapter';
+import type { AssetAdapter, Client, Transaction } from './IAssetAdapter';
 import { NimiqAssetAdapter } from './NimiqAssetAdapter';
 
 // Re-export to centralize exports
