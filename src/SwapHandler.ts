@@ -1,9 +1,9 @@
 import { BitcoinAssetAdapter } from './BitcoinAssetAdapter';
+import { Erc20AssetAdapter } from './Erc20AssetAdapter';
 import { EuroAssetAdapter } from './EuroAssetAdapter';
 import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 import type { Client, Transaction } from './IAssetAdapter';
 import { NimiqAssetAdapter } from './NimiqAssetAdapter';
-import { UsdcAssetAdapter } from './UsdcAssetAdapter';
 
 // Re-export to centralize exports
 export { Client, SwapAsset, Transaction };
@@ -13,7 +13,7 @@ export type Contract<TAsset extends SwapAsset> = {
         address: string,
         data: TAsset extends SwapAsset.NIM ? string : never,
         script: TAsset extends SwapAsset.BTC ? string : never,
-        contract: TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? string : never,
+        contract: TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT ? string : never,
     },
 };
 
@@ -47,7 +47,10 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
                 return new BitcoinAssetAdapter(client as Client<SwapAsset.BTC>) as AssetAdapter<SwapAsset>;
             case SwapAsset.USDC:
             case SwapAsset.USDC_MATIC:
-                return new UsdcAssetAdapter(client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC>) as AssetAdapter<
+            case SwapAsset.USDT:
+                return new Erc20AssetAdapter(
+                    client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT>,
+                ) as AssetAdapter<
                     SwapAsset
                 >;
             case SwapAsset.EUR:

@@ -66,7 +66,7 @@ export interface Web3Client {
     endBlock?: number;
 }
 
-export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset.USDC_MATIC> {
+export class Erc20AssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT> {
     private cancelCallback: ((reason: Error) => void) | null = null;
     private stopped = false;
 
@@ -137,7 +137,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset
             async (id, token, amount, recipient, hash, timeout, log) => {
                 if (amount.toNumber() !== value) {
                     console.warn(
-                        `Found USDC HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`,
+                        `Found ERC-20 HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`,
                     );
                     return false;
                 }
@@ -158,7 +158,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset
     }
 
     public async fundHtlc(_serializedTx: string): Promise<Event<EventType.OPEN>> {
-        throw new Error('Method "fundHtlc" not available for USDC HTLCs');
+        throw new Error('Method "fundHtlc" not available for ERC-20 HTLCs');
     }
 
     public async awaitHtlcSettlement(htlcId: string): Promise<Event<EventType.REDEEM>> {
@@ -175,7 +175,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset
         _serializedTx: string,
         _secret: string,
     ): Promise<Event<EventType.REDEEM>> {
-        throw new Error('Method "settleHtlc" not available for USDC HTLCs');
+        throw new Error('Method "settleHtlc" not available for ERC-20 HTLCs');
     }
 
     public async awaitSettlementConfirmation(htlcId: string): Promise<Event<EventType.REDEEM>> {
