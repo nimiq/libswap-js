@@ -157,7 +157,7 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset
         );
     }
 
-    public async fundHtlc(serializedTx: string): Promise<Event<EventType.OPEN>> {
+    public async fundHtlc(_serializedTx: string): Promise<Event<EventType.OPEN>> {
         throw new Error('Method "fundHtlc" not available for USDC HTLCs');
     }
 
@@ -172,8 +172,8 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset
     }
 
     public async settleHtlc(
-        serializedTx: string,
-        secret: string,
+        _serializedTx: string,
+        _secret: string,
     ): Promise<Event<EventType.REDEEM>> {
         throw new Error('Method "settleHtlc" not available for USDC HTLCs');
     }
