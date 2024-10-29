@@ -13,8 +13,7 @@
   },
   "types": "./dist/libswap.d.ts",
   "scripts": {
-    "build": "tsc",
-    "prepare": "tsc"
+    "build": "tsc"
   },
   "files": [
     "dist"
@@ -33,6 +32,6 @@
   },
   "devDependencies": {
     "@types/promise.prototype.finally": "^2.0.4",
-    "typescript": "^4.2.4"
+    "typescript": "^5.6.3"
   }
 }
