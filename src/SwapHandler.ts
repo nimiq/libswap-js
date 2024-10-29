@@ -1,8 +1,9 @@
 import { BitcoinAssetAdapter } from './BitcoinAssetAdapter';
 import { Erc20AssetAdapter } from './Erc20AssetAdapter';
-import { EuroAssetAdapter } from './EuroAssetAdapter';
-import { AssetAdapter, SwapAsset } from './IAssetAdapter';
-import type { Client, Transaction } from './IAssetAdapter';
+import { FiatAssetAdapter } from './FiatAssetAdapter';
+import type { OasisSettlementTokens } from './FiatAssetAdapter';
+import { SwapAsset } from './IAssetAdapter';
+import type { AssetAdapter, Client, Transaction } from './IAssetAdapter';
 import { NimiqAssetAdapter } from './NimiqAssetAdapter';
 
 // Re-export to centralize exports
@@ -54,7 +55,9 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
                     SwapAsset
                 >;
             case SwapAsset.EUR:
-                return new EuroAssetAdapter(client as Client<SwapAsset.EUR>) as AssetAdapter<SwapAsset>;
+                return new FiatAssetAdapter(client as Client<SwapAsset.EUR>) as AssetAdapter<SwapAsset>;
+            case SwapAsset.CRC:
+                return new FiatAssetAdapter(client as Client<SwapAsset.CRC>) as AssetAdapter<SwapAsset>;
             default:
                 throw new Error(`Unsupported asset: ${asset}`);
         }
@@ -121,13 +124,13 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
     public async settleIncoming(
         serializedTx: string,
         secret: string,
-        authorizationToken?: string,
+        tokens?: OasisSettlementTokens,
     ): Promise<Transaction<ToAsset>> {
         return this.toAssetAdapter.settleHtlc(
             serializedTx,
             secret,
             this.swap.hash,
-            authorizationToken,
+            tokens,
         );
     }
 

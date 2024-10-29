@@ -1,7 +1,7 @@
-import { BitcoinClient, TransactionDetails as BitcoinTransactionDetails } from './BitcoinAssetAdapter';
-import { GenericEvent as Erc20TransactionDetails, Web3Client } from './Erc20AssetAdapter';
-import { HtlcDetails as EuroHtlcDetails, OasisClient } from './EuroAssetAdapter';
-import { NimiqClient, TransactionDetails as NimiqTransactionDetails } from './NimiqAssetAdapter';
+import type { BitcoinClient, TransactionDetails as BitcoinTransactionDetails } from './BitcoinAssetAdapter';
+import type { GenericEvent as Erc20TransactionDetails, Web3Client } from './Erc20AssetAdapter';
+import type { OasisClient, OasisHtlcDetails, OasisSettlementTokens } from './FiatAssetAdapter';
+import type { NimiqClient, TransactionDetails as NimiqTransactionDetails } from './NimiqAssetAdapter';
 
 export enum SwapAsset {
     NIM = 'NIM',
@@ -10,18 +10,21 @@ export enum SwapAsset {
     USDC_MATIC = 'USDC_MATIC',
     USDT = 'USDT', // Alternatively USDT_MATIC
     EUR = 'EUR',
+    CRC = 'CRC',
 }
+
+export type FiatSwapAsset = SwapAsset.EUR | SwapAsset.CRC;
 
 export type Transaction<TAsset extends SwapAsset> = TAsset extends SwapAsset.NIM ? NimiqTransactionDetails
     : TAsset extends SwapAsset.BTC ? BitcoinTransactionDetails
     : TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT ? Erc20TransactionDetails
-    : TAsset extends SwapAsset.EUR ? EuroHtlcDetails
+    : TAsset extends FiatSwapAsset ? OasisHtlcDetails
     : never;
 
 export type Client<TAsset extends SwapAsset> = TAsset extends SwapAsset.NIM ? NimiqClient
     : TAsset extends SwapAsset.BTC ? BitcoinClient
     : TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT ? Web3Client
-    : TAsset extends SwapAsset.EUR ? OasisClient
+    : TAsset extends FiatSwapAsset ? OasisClient
     : never;
 
 export interface AssetAdapter<TAsset extends SwapAsset> {
@@ -49,7 +52,7 @@ export interface AssetAdapter<TAsset extends SwapAsset> {
         serializedTx: string,
         secret: string,
         hash: string,
-        authorizationToken?: string,
+        tokens?: OasisSettlementTokens,
     ): Promise<Transaction<TAsset>>;
 
     awaitSettlementConfirmation(

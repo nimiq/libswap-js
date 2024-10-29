@@ -1,14 +1,14 @@
-import { Htlc as OasisHtlc, HtlcStatus, SettlementInstruction, SettlementStatus } from '@nimiq/oasis-api';
-import { AssetAdapter, SwapAsset } from './IAssetAdapter';
+import { Htlc, HtlcStatus, SettlementInstruction, SettlementStatus, SettlementTokens } from '@nimiq/oasis-api';
+import type { AssetAdapter, FiatSwapAsset } from './IAssetAdapter';
 
-export type HtlcDetails = OasisHtlc;
+export { Htlc as OasisHtlcDetails, SettlementTokens as OasisSettlementTokens };
 
 export interface OasisClient {
-    getHtlc(id: string): Promise<HtlcDetails>;
-    settleHtlc(id: string, secret: string, settlementJWS: string, authorizationToken?: string): Promise<HtlcDetails>;
+    getHtlc(id: string): Promise<Htlc>;
+    settleHtlc(id: string, secret: string, settlementJWS: string, tokens?: SettlementTokens): Promise<Htlc>;
 }
 
-export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
+export class FiatAssetAdapter implements AssetAdapter<FiatSwapAsset> {
     private cancelCallback: ((reason: Error) => void) | null = null;
     private stopped = false;
 
@@ -16,9 +16,9 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
 
     private async findTransaction(
         id: string,
-        test: (htlc: HtlcDetails) => boolean,
-    ): Promise<HtlcDetails> {
-        const check = async (): Promise<HtlcDetails | null> => {
+        test: (htlc: Htlc) => boolean,
+    ): Promise<Htlc> {
+        const check = async (): Promise<Htlc | null> => {
             try {
                 const htlc = await this.client.getHtlc(id);
                 if (test(htlc)) return htlc;
@@ -64,8 +64,8 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         value: number,
         data?: string,
         confirmations?: number,
-        onUpdate?: (htlc: HtlcDetails) => any,
-    ): Promise<HtlcDetails> {
+        onUpdate?: (htlc: Htlc) => any,
+    ): Promise<Htlc> {
         return this.findTransaction(
             id,
             (htlc) => {
@@ -81,15 +81,15 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    public async fundHtlc(): Promise<HtlcDetails> {
-        throw new Error('Method "fundHtlc" not available for EUR HTLCs');
+    public async fundHtlc(): Promise<Htlc> {
+        throw new Error('Method "fundHtlc" not available for EUR/CRC HTLCs');
     }
 
-    public async awaitHtlcSettlement(id: string): Promise<OasisHtlc<HtlcStatus.SETTLED>> {
+    public async awaitHtlcSettlement(id: string): Promise<Htlc<HtlcStatus.SETTLED>> {
         return this.findTransaction(
             id,
             (htlc) => typeof htlc.preimage.value === 'string',
-        ) as Promise<OasisHtlc<HtlcStatus.SETTLED>>;
+        ) as Promise<Htlc<HtlcStatus.SETTLED>>;
     }
 
     public async awaitSwapSecret(id: string): Promise<string> {
@@ -101,18 +101,18 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         settlementJWS: string,
         secret: string,
         hash: string,
-        authorizationToken?: string,
-    ): Promise<HtlcDetails> {
-        if (this.stopped) throw new Error('EuroAssetAdapter called while stopped');
+        tokens?: SettlementTokens,
+    ): Promise<Htlc> {
+        if (this.stopped) throw new Error('FiatAssetAdapter called while stopped');
 
         const jwsBody = settlementJWS.split('.')[1];
         // JWS is encoded as Base64Url
         const jsonBody = atob(jwsBody.replace(/_/g, '/').replace(/-/g, '+'));
         const payload = JSON.parse(jsonBody) as SettlementInstruction;
 
-        let htlc: HtlcDetails;
+        let htlc: Htlc;
         try {
-            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, authorizationToken);
+            htlc = await this.client.settleHtlc(payload.contractId, secret, settlementJWS, tokens);
         } catch (error) {
             console.error(error); // eslint-disable-line no-console
             htlc = await this.client.getHtlc(payload.contractId);
@@ -125,7 +125,7 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         return htlc;
     }
 
-    public async awaitSettlementConfirmation(id: string, onUpdate?: (tx: HtlcDetails) => any): Promise<HtlcDetails> {
+    public async awaitSettlementConfirmation(id: string, onUpdate?: (tx: Htlc) => any): Promise<Htlc> {
         return this.findTransaction(id, (htlc) => {
             if (htlc.status !== HtlcStatus.SETTLED) return false;
 
