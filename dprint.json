@@ -5,6 +5,7 @@
       "typeLiteral.separatorKind": "comma",
     },
     "excludes": [
+      "**/dist",
       "**/node_modules",
     ],
     "plugins": [
