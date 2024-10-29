@@ -1,1 +1,1 @@
-export * from './src/SwapHandler'
+export * from './src/SwapHandler';

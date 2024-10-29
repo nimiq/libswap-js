@@ -129,8 +129,10 @@ export class EuroAssetAdapter implements AssetAdapter<SwapAsset.EUR> {
         return this.findTransaction(id, (htlc) => {
             if (htlc.status !== HtlcStatus.SETTLED) return false;
 
-            if (htlc.settlement.status === SettlementStatus.ACCEPTED
-                || htlc.settlement.status === SettlementStatus.CONFIRMED) return true;
+            if (
+                htlc.settlement.status === SettlementStatus.ACCEPTED
+                || htlc.settlement.status === SettlementStatus.CONFIRMED
+            ) return true;
 
             if (typeof onUpdate === 'function') onUpdate(htlc);
 

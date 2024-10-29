@@ -1,12 +1,12 @@
-import { AssetAdapter, SwapAsset } from './IAssetAdapter';
-import type { Transaction, Client } from './IAssetAdapter';
-import { NimiqAssetAdapter } from './NimiqAssetAdapter';
 import { BitcoinAssetAdapter } from './BitcoinAssetAdapter';
-import { UsdcAssetAdapter } from './UsdcAssetAdapter';
 import { EuroAssetAdapter } from './EuroAssetAdapter';
+import { AssetAdapter, SwapAsset } from './IAssetAdapter';
+import type { Client, Transaction } from './IAssetAdapter';
+import { NimiqAssetAdapter } from './NimiqAssetAdapter';
+import { UsdcAssetAdapter } from './UsdcAssetAdapter';
 
 // Re-export to centralize exports
-export { SwapAsset, Client, Transaction };
+export { Client, SwapAsset, Transaction };
 
 export type Contract<TAsset extends SwapAsset> = {
     htlc: {
@@ -15,7 +15,7 @@ export type Contract<TAsset extends SwapAsset> = {
         script: TAsset extends SwapAsset.BTC ? string : never,
         contract: TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? string : never,
     },
-}
+};
 
 export type Swap<FromAsset extends SwapAsset, ToAsset extends SwapAsset> = {
     from: {
@@ -29,7 +29,7 @@ export type Swap<FromAsset extends SwapAsset, ToAsset extends SwapAsset> = {
     },
     hash: string,
     contracts: { [asset in FromAsset | ToAsset]: Contract<FromAsset | ToAsset> },
-}
+};
 
 export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset> {
     private swap: Swap<FromAsset, ToAsset>;
@@ -47,7 +47,9 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
                 return new BitcoinAssetAdapter(client as Client<SwapAsset.BTC>) as AssetAdapter<SwapAsset>;
             case SwapAsset.USDC:
             case SwapAsset.USDC_MATIC:
-                return new UsdcAssetAdapter(client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC>) as AssetAdapter<SwapAsset>;
+                return new UsdcAssetAdapter(client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC>) as AssetAdapter<
+                    SwapAsset
+                >;
             case SwapAsset.EUR:
                 return new EuroAssetAdapter(client as Client<SwapAsset.EUR>) as AssetAdapter<SwapAsset>;
             default:
@@ -66,7 +68,10 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
         this.swap = swap;
     }
 
-    public async awaitIncoming(onUpdate: (tx: Transaction<ToAsset>) => any, confirmations = 0): Promise<Transaction<ToAsset>> {
+    public async awaitIncoming(
+        onUpdate: (tx: Transaction<ToAsset>) => any,
+        confirmations = 0,
+    ): Promise<Transaction<ToAsset>> {
         const contract = this.swap.contracts[this.swap.to.asset] as Contract<ToAsset>;
 
         return this.toAssetAdapter.awaitHtlcFunding(
@@ -86,7 +91,10 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
         return this.fromAssetAdapter.fundHtlc(serializedTx, onPending, serializedProxyTx);
     }
 
-    public async awaitOutgoing(onUpdate: (tx: Transaction<FromAsset>) => any, confirmations = 0): Promise<Transaction<FromAsset>> {
+    public async awaitOutgoing(
+        onUpdate: (tx: Transaction<FromAsset>) => any,
+        confirmations = 0,
+    ): Promise<Transaction<FromAsset>> {
         const contract = this.swap.contracts[this.swap.from.asset] as Contract<FromAsset>;
 
         return this.fromAssetAdapter.awaitHtlcFunding(

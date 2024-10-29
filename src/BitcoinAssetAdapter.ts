@@ -1,7 +1,7 @@
-import type { TransactionDetails, ConsensusState } from '@nimiq/electrum-client';
+import type { ConsensusState, TransactionDetails } from '@nimiq/electrum-client';
 import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 
-export { TransactionDetails, ConsensusState };
+export { ConsensusState, TransactionDetails };
 
 export interface BitcoinClient {
     addTransactionListener(listener: (tx: TransactionDetails) => any, addresses: string[]): number | Promise<number>;
@@ -116,8 +116,11 @@ export class BitcoinAssetAdapter implements AssetAdapter<SwapAsset.BTC> {
     public async awaitHtlcSettlement(address: string, data: string): Promise<TransactionDetails> {
         return this.findTransaction(
             address,
-            (tx) => tx.inputs.some((input) => input.address === address
-                && typeof input.witness[4] === 'string' && input.witness[4] === data),
+            (tx) =>
+                tx.inputs.some((input) =>
+                    input.address === address
+                    && typeof input.witness[4] === 'string' && input.witness[4] === data
+                ),
         );
     }
 

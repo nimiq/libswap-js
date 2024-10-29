@@ -14,22 +14,21 @@ type OpenEventArgs = [
     /* recipient */ string,
     /* hash */ string,
     /* timeout */ BigNumber,
-]
+];
 
 type RedeemEventArgs = [
     /* id */ string,
     /* secret */ string,
-]
+];
 
 type RefundEventArgs = [
     /* id */ string,
-]
+];
 
-type EventArgs<T extends EventType> =
-    T extends EventType.OPEN ? OpenEventArgs :
-    T extends EventType.REDEEM ? RedeemEventArgs :
-    T extends EventType.REFUND ? RefundEventArgs :
-    never;
+type EventArgs<T extends EventType> = T extends EventType.OPEN ? OpenEventArgs
+    : T extends EventType.REDEEM ? RedeemEventArgs
+    : T extends EventType.REFUND ? RefundEventArgs
+    : never;
 
 type OpenResult = ReadonlyArray<any> & OpenEventArgs & {
     id: string,
@@ -38,23 +37,22 @@ type OpenResult = ReadonlyArray<any> & OpenEventArgs & {
     recipient: string,
     hash: string,
     timeout: BigNumber,
-}
+};
 
 type RedeemResult = ReadonlyArray<any> & RedeemEventArgs & {
     id: string,
     secret: string,
-}
+};
 
 type RefundResult = ReadonlyArray<any> & RefundEventArgs & {
     id: string,
-}
+};
 
 export interface Event<T extends EventType> extends EthersEvent {
-    args:
-        T extends EventType.OPEN ? OpenResult :
-        T extends EventType.REDEEM ? RedeemResult :
-        T extends EventType.REFUND ? RefundResult :
-        never;
+    args: T extends EventType.OPEN ? OpenResult
+        : T extends EventType.REDEEM ? RedeemResult
+        : T extends EventType.REFUND ? RefundResult
+        : never;
 }
 
 export type GenericEvent = Event<EventType>;
@@ -62,10 +60,10 @@ export type GenericEvent = Event<EventType>;
 // type EventTester<T extends EventType> = (...args: EventArgs<T>) => boolean;
 
 export interface Web3Client {
-    htlcContract: Contract,
-    currentBlock: () => number | Promise<number>,
-    startBlock: number,
-    endBlock?: number,
+    htlcContract: Contract;
+    currentBlock: () => number | Promise<number>;
+    startBlock: number;
+    endBlock?: number;
 }
 
 export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset.USDC_MATIC> {
@@ -138,7 +136,9 @@ export class UsdcAssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset
             filter,
             async (id, token, amount, recipient, hash, timeout, log) => {
                 if (amount.toNumber() !== value) {
-                    console.warn(`Found USDC HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`);
+                    console.warn(
+                        `Found USDC HTLC, but amount does not match. Expected ${value}, found ${amount.toNumber()}`,
+                    );
                     return false;
                 }
 

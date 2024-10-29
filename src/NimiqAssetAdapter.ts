@@ -8,14 +8,19 @@ export type TransactionDetails = ReturnType<import('@nimiq/core-web').Client.Tra
 export type ConsensusState = import('@nimiq/core-web').Client.ConsensusState;
 
 export interface NimiqClient {
-    addTransactionListener(listener: (tx: TransactionDetails | RawTransactionDetails) => any, addresses: string[]): number | Promise<number>;
+    addTransactionListener(
+        listener: (tx: TransactionDetails | RawTransactionDetails) => any,
+        addresses: string[],
+    ): number | Promise<number>;
     getTransactionsByAddress(
         address: string,
         sinceBlockHeight?: number,
         knownTransactions?: TransactionDetails[] | RawTransactionDetails[],
     ): Promise<TransactionDetails[] | RawTransactionDetails[]>;
     removeListener(handle: number): void | Promise<void>;
-    sendTransaction(tx: TransactionDetails | RawTransactionDetails | string): Promise<TransactionDetails | RawTransactionDetails>;
+    sendTransaction(
+        tx: TransactionDetails | RawTransactionDetails | string,
+    ): Promise<TransactionDetails | RawTransactionDetails>;
     addConsensusChangedListener(listener: (consensusState: ConsensusState) => any): number | Promise<number>;
 }
 
@@ -118,9 +123,11 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
                 () => this.sendTransaction(serializedProxyTx, false),
                 60 * 1000, // Every 1 minute
             );
-            await this.findTransaction(proxyTx.recipient, (tx) => tx.transactionHash === proxyTx.transactionHash
-                && (tx.state === 'mined' || tx.state === 'confirmed'),
-            ).finally(() => window.clearInterval(resendInterval));
+            await this.findTransaction(proxyTx.recipient, (tx) =>
+                tx.transactionHash === proxyTx.transactionHash
+                && (tx.state === 'mined' || tx.state === 'confirmed')).finally(() =>
+                    window.clearInterval(resendInterval)
+                );
         }
 
         const htlcTx = await this.sendTransaction(serializedTx, false);
@@ -141,7 +148,8 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
     public async awaitHtlcSettlement(address: string): Promise<TransactionDetails> {
         return this.findTransaction(
             address,
-            (tx) => tx.sender === address
+            (tx) =>
+                tx.sender === address
                 && typeof (tx.proof as any as { preImage: unknown }).preImage === 'string',
         );
     }
@@ -157,16 +165,16 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
         hash: string,
     ): Promise<TransactionDetails> {
         serializedTx = serializedTx
-        .replace(
-            `${hash}0000000000000000000000000000000000000000000000000000000000000000`,
-            `${hash}${secret}`,
-        )
-        // Also handle "valid" transactions, where the hashRoot is the hash of the dummy secret
-        .replace(
-            '66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925' // SHA256 hash of dummy secret
-            + '0000000000000000000000000000000000000000000000000000000000000000', // Dummy secret
-            `${hash}${secret}`,
-        );
+            .replace(
+                `${hash}0000000000000000000000000000000000000000000000000000000000000000`,
+                `${hash}${secret}`,
+            )
+            // Also handle "valid" transactions, where the hashRoot is the hash of the dummy secret
+            .replace(
+                '66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925' // SHA256 hash of dummy secret
+                    + '0000000000000000000000000000000000000000000000000000000000000000', // Dummy secret
+                `${hash}${secret}`,
+            );
         return this.sendTransaction(serializedTx);
     }
 

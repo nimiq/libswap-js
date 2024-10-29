@@ -1,19 +1,7 @@
-import {
-    TransactionDetails as NimiqTransactionDetails,
-    NimiqClient,
-} from './NimiqAssetAdapter';
-import {
-    TransactionDetails as BitcoinTransactionDetails,
-    BitcoinClient,
-} from './BitcoinAssetAdapter';
-import {
-    GenericEvent as UsdcTransactionDetails,
-    Web3Client,
-} from './UsdcAssetAdapter';
-import {
-    HtlcDetails as EuroHtlcDetails,
-    OasisClient,
-} from './EuroAssetAdapter';
+import { BitcoinClient, TransactionDetails as BitcoinTransactionDetails } from './BitcoinAssetAdapter';
+import { HtlcDetails as EuroHtlcDetails, OasisClient } from './EuroAssetAdapter';
+import { NimiqClient, TransactionDetails as NimiqTransactionDetails } from './NimiqAssetAdapter';
+import { GenericEvent as UsdcTransactionDetails, Web3Client } from './UsdcAssetAdapter';
 
 export enum SwapAsset {
     NIM = 'NIM',
@@ -23,15 +11,13 @@ export enum SwapAsset {
     EUR = 'EUR',
 }
 
-export type Transaction<TAsset extends SwapAsset> =
-    TAsset extends SwapAsset.NIM ? NimiqTransactionDetails
+export type Transaction<TAsset extends SwapAsset> = TAsset extends SwapAsset.NIM ? NimiqTransactionDetails
     : TAsset extends SwapAsset.BTC ? BitcoinTransactionDetails
     : TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? UsdcTransactionDetails
     : TAsset extends SwapAsset.EUR ? EuroHtlcDetails
     : never;
 
-export type Client<TAsset extends SwapAsset> =
-    TAsset extends SwapAsset.NIM ? NimiqClient
+export type Client<TAsset extends SwapAsset> = TAsset extends SwapAsset.NIM ? NimiqClient
     : TAsset extends SwapAsset.BTC ? BitcoinClient
     : TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC ? Web3Client
     : TAsset extends SwapAsset.EUR ? OasisClient
