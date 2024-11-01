@@ -66,7 +66,7 @@ export interface Web3Client {
     endBlock?: number;
 }
 
-export class Erc20AssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT> {
+export class Erc20AssetAdapter implements AssetAdapter<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC> {
     private cancelCallback: ((reason: Error) => void) | null = null;
     private stopped = false;
 

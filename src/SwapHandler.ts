@@ -13,7 +13,7 @@ export type Contract<TAsset extends SwapAsset> = {
         address: string,
         data: TAsset extends SwapAsset.NIM ? string : never,
         script: TAsset extends SwapAsset.BTC ? string : never,
-        contract: TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT ? string : never,
+        contract: TAsset extends SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC ? string : never,
     },
 };
 
@@ -47,9 +47,9 @@ export class SwapHandler<FromAsset extends SwapAsset, ToAsset extends SwapAsset>
                 return new BitcoinAssetAdapter(client as Client<SwapAsset.BTC>) as AssetAdapter<SwapAsset>;
             case SwapAsset.USDC:
             case SwapAsset.USDC_MATIC:
-            case SwapAsset.USDT:
+            case SwapAsset.USDT_MATIC:
                 return new Erc20AssetAdapter(
-                    client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT>,
+                    client as Client<SwapAsset.USDC | SwapAsset.USDC_MATIC | SwapAsset.USDT_MATIC>,
                 ) as AssetAdapter<
                     SwapAsset
                 >;
