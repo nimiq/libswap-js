@@ -3,25 +3,19 @@ import { AssetAdapter, SwapAsset } from './IAssetAdapter';
 
 shimPromiseFinally();
 
-type RawTransactionDetails = import('@nimiq/core-web').Client.TransactionDetails;
-export type TransactionDetails = ReturnType<import('@nimiq/core-web').Client.TransactionDetails['toPlain']>;
-export type ConsensusState = import('@nimiq/core-web').Client.ConsensusState;
+export type TransactionDetails = import('@nimiq/core').PlainTransactionDetails;
+export type ConsensusState = import('@nimiq/core').ConsensusState;
 
 export interface NimiqClient {
-    addTransactionListener(
-        listener: (tx: TransactionDetails | RawTransactionDetails) => any,
-        addresses: string[],
-    ): number | Promise<number>;
+    addTransactionListener(listener: (tx: TransactionDetails) => any, addresses: string[]): number | Promise<number>;
     getTransactionsByAddress(
         address: string,
         sinceBlockHeight?: number,
-        knownTransactions?: TransactionDetails[] | RawTransactionDetails[],
-    ): Promise<TransactionDetails[] | RawTransactionDetails[]>;
-    removeListener(handle: number): void | Promise<void>;
-    sendTransaction(
-        tx: TransactionDetails | RawTransactionDetails | string,
-    ): Promise<TransactionDetails | RawTransactionDetails>;
-    addConsensusChangedListener(listener: (consensusState: ConsensusState) => any): number | Promise<number>;
+        knownTransactions?: TransactionDetails[],
+    ): Promise<TransactionDetails[]>;
+    removeListener(handle: number): Promise<void>;
+    sendTransaction(tx: TransactionDetails | string): Promise<TransactionDetails>;
+    addConsensusChangedListener(listener: (consensusState: ConsensusState) => any): Promise<number>;
 }
 
 export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
@@ -36,8 +30,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
     ): Promise<TransactionDetails> {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-            const listener = (tx: TransactionDetails | RawTransactionDetails) => {
-                if ('toPlain' in tx) tx = tx.toPlain();
+            const listener = (tx: TransactionDetails) => {
                 if (!test(tx)) return false;
 
                 cleanup();
@@ -49,7 +42,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
             const transactionListener = await this.client.addTransactionListener(listener, [address]);
 
             // Setup a transaction history check function
-            let history: TransactionDetails[] | RawTransactionDetails[] = [];
+            let history: TransactionDetails[] = [];
             const checkHistory = async () => {
                 history = await this.client.getTransactionsByAddress(address, 0, history);
                 for (const tx of history) {
@@ -62,7 +55,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
 
             // Re-check transaction history when consensus is re-established
             const consensusListener = await this.client.addConsensusChangedListener(
-                (consensusState: ConsensusState) => consensusState === 'established' && checkHistory(),
+                (consensusState) => consensusState === 'established' && checkHistory(),
             );
 
             // Also re-check transaction history every minute to catch cases where subscription fails
@@ -99,7 +92,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
                 if (typeof tx.data.raw !== 'string' || tx.data.raw !== data) return false;
 
                 // Must wait until mined
-                if (tx.state === 'mined' || tx.state === 'confirmed') {
+                if (tx.state === 'included' || tx.state === 'confirmed') {
                     if (tx.confirmations! >= confirmations) return true;
                 }
 
@@ -125,7 +118,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
             );
             await this.findTransaction(proxyTx.recipient, (tx) =>
                 tx.transactionHash === proxyTx.transactionHash
-                && (tx.state === 'mined' || tx.state === 'confirmed')).finally(() =>
+                && (tx.state === 'included' || tx.state === 'confirmed')).finally(() =>
                     window.clearInterval(resendInterval)
                 );
         }
@@ -185,7 +178,7 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
         return this.findTransaction(address, (tx) => {
             if (tx.sender !== address) return false;
             if (typeof (tx.proof as any as { preImage: unknown }).preImage !== 'string') return false;
-            if (tx.state === 'mined' || tx.state === 'confirmed') return true;
+            if (tx.state === 'included' || tx.state === 'confirmed') return true;
             if (typeof onUpdate === 'function') onUpdate(tx);
             return false;
         });
@@ -199,7 +192,6 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
     private async sendTransaction(serializedTx: string, throwOnFailure = true): Promise<TransactionDetails> {
         if (this.stopped) throw new Error('NimiqAssetAdapter called while stopped');
         let tx = await this.client.sendTransaction(serializedTx);
-        if ('toPlain' in tx) tx = tx.toPlain();
         if (throwOnFailure && tx.state === 'new') throw new Error('Failed to send transaction');
         return tx;
     }
