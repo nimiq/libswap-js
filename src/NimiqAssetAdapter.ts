@@ -157,16 +157,19 @@ export class NimiqAssetAdapter implements AssetAdapter<SwapAsset.NIM> {
         secret: string,
         hash: string,
     ): Promise<TransactionDetails> {
+        // HTLC proofs in Albatross include a preimage length byte
+        const preImageLength = (secret.length / 2).toString(16).padStart(2, '0');
+        const dummyPreImage = ''.padEnd(secret.length, '0');
         serializedTx = serializedTx
             .replace(
-                `${hash}0000000000000000000000000000000000000000000000000000000000000000`,
-                `${hash}${secret}`,
+                `${hash}${preImageLength}${dummyPreImage}`,
+                `${hash}${preImageLength}${secret}`,
             )
             // Also handle "valid" transactions, where the hashRoot is the hash of the dummy secret
             .replace(
-                '66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925' // SHA256 hash of dummy secret
-                    + '0000000000000000000000000000000000000000000000000000000000000000', // Dummy secret
-                `${hash}${secret}`,
+                // SHA256 hash of 32-byte dummy secret
+                `66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925${preImageLength}${dummyPreImage}`,
+                `${hash}${preImageLength}${secret}`,
             );
         return this.sendTransaction(serializedTx);
     }
