@@ -384,12 +384,13 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@nimiq/core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.0.0.tgz#ed1509f7914b52ee4ba42eddb0eb596f867dd76f"
-  integrity sha512-cr388Q3NiSBpIDA7zAlLwlyMf/+qp+p6ytCNah3fzXluC2l8JGrpDqNT1ezzchjZTbj1hjJE7gcyUSzzpPDvnQ==
+"@nimiq/core@^2.20.0":
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.20.0.tgz#c923cfbfedc53d00d3be235e6c1b281e10c51323"
+  integrity sha512-JJYQJRVoI61rulUbeMH83HPv3o+vfaivjk93t50YbYTo5QY4zx/yrpmX1Xsvjk3i2nszaC6iql22g7CPd4tUSQ==
   dependencies:
     comlink "^4.4.1"
+    vite-plugin-wasm "^3.5.0"
     websocket "^1.0.34"
 
 "@nimiq/electrum-client@https://github.com/nimiq/electrum-client#build":
@@ -1185,6 +1186,11 @@ varuint-bitcoin@^1.0.4:
   integrity sha512-4EVb+w4rx+YfVM32HQX42AbbT7/1f5zwAYhIujKXKk8NQK+JfRVl3pqT3hjNn/L+RstigmGGKVwHA/P0wgITZw==
   dependencies:
     safe-buffer "^5.1.1"
+
+vite-plugin-wasm@^3.5.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/vite-plugin-wasm/-/vite-plugin-wasm-3.6.0.tgz#e67a544e22fffd4a6b5f925c47fd90a5530d277c"
+  integrity sha512-mL/QPziiIA4RAA6DkaZZzOstdwbW5jO4Vz7Zenj0wieKWBlNvIvX5L5ljum9lcUX0ShNfBgCNLKTjNkRVVqcsw==
 
 websocket@^1.0.34:
   version "1.0.34"
